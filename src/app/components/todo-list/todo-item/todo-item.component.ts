@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Input, OnInit } from '@angular/core';
 import { Todo } from '../../../models/todo.model';
 
 @Component({
@@ -7,15 +7,22 @@ import { Todo } from '../../../models/todo.model';
   styleUrls: ['./todo-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodoItemComponent implements OnInit {
+export class TodoItemComponent {
 
   @Input() todo: Todo;
 
-  constructor() { }
+  isDragOver: boolean;
 
-  ngOnInit() {
+  @HostListener('dragover', ['$event'])
+  onDragOver(event) {
+    event.preventDefault();
+    this.isDragOver = true;
   }
 
+  @HostListener('dragleave', ['$event'])
+  onDragExit() {
+    this.isDragOver = false;
+  }
 
   get title() {
     console.log('rendering ', this.todo.title);

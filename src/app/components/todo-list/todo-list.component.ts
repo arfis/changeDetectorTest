@@ -1,5 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, NgZone, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  NgZone,
+  OnInit,
+  Output
+} from '@angular/core';
 import { Todo } from '../../models/todo.model';
+import * as uuid from 'uuid';
+import { TodoItemComponent } from './todo-item/todo-item.component';
 
 @Component({
   selector: 'app-todo-list',
@@ -8,6 +20,8 @@ import { Todo } from '../../models/todo.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoListComponent implements OnInit {
+
+  @Input() id;
 
   todos: Todo[] = [
     {
@@ -30,12 +44,31 @@ export class TodoListComponent implements OnInit {
   selectedTodoIndex: number;
   addingInterval: any;
   changeDetectorStatus: string;
+  dragableItem: any;
+
+  @Output() todoDragStart = new EventEmitter<Todo>();
 
   @HostListener('window:click', ['$event'])
   onClick(event) {
     this.zone.runOutsideAngular(() => {
       console.log('click event');
-    })
+    });
+  }
+
+  @HostListener('drop', ['$event'])
+  onDropAction(event) {
+    console.log('on drop ', event);
+    const droppedData = JSON.parse(event.dataTransfer.getData('json'));
+    this.todos = [
+      ...this.todos,
+      droppedData
+    ]
+  }
+
+  @HostListener('dragover', ['$event'])
+  onDragOver(event) {
+    console.log('drag over');
+    event.preventDefault();
   }
 
   constructor(private zone: NgZone,
@@ -51,7 +84,7 @@ export class TodoListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.removeChangeDetector();
+    // this.removeChangeDetector();
   }
 
   toggleTodo() {
@@ -95,6 +128,19 @@ export class TodoListComponent implements OnInit {
       this.changeDetector.detectChanges();
     }
   }
+
+  onDragStart(event: DragEvent, item: Todo) {
+    this.dragableItem = item;
+    event.dataTransfer.setData('json', JSON.stringify(item));
+    this.todoDragStart.next({...item});
+  }
+
+  onDragEnd() {
+    this.todos = [
+      ...this.todos.filter(todo => todo !== this.dragableItem)
+    ];
+  }
+
 
   get isChangeDetectorOn() {
     return this.changeDetectorStatus === 'on';

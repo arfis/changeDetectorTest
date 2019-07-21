@@ -1,1 +1,11 @@
-<app-todo-list></app-todo-list>
+<app-swimlane-list class="swimline-list">
+  <app-swimlane class="swimline"
+                *ngFor="let swimline of swimlines; let i = index"
+                [name]="swimline.title"
+  >
+    <app-todo-list
+      [id]="i"
+      (todoDragStart)="startDragging($event)"
+    ></app-todo-list>
+  </app-swimlane>
+</app-swimlane-list>
