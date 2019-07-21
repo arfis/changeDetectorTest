@@ -1,0 +1,14 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.item {
+  margin: 10px;
+  padding: 0 20px;
+  cursor: pointer;
+
+  &.selected {
+    border: 2px solid black;
+  }
+}

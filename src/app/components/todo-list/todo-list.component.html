@@ -1,0 +1,13 @@
+<button (click)="toggleTodo()">Toggle todo</button>
+<button (click)="toggleAddingTodo()">Toggle Adding todos</button>
+<button (click)="toggleChangeDetector()">Change detector is {{changeDetectorStatus}}</button>
+
+<div class="list">
+  <app-todo-item
+    class="item"
+    [ngClass]="{'selected' : i === selectedTodoIndex}"
+    *ngFor="let todo of todos; let i = index"
+    (click)="selectTodo(i)"
+    [todo]="todo"></app-todo-item>
+</div>
+
